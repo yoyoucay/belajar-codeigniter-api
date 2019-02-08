@@ -44,4 +44,17 @@ class User extends CI_Model
     return false;
   }
 
+  public function delete($id)
+  {
+
+    $this->db->where('id', $id);
+    if ($this->db->delete('users')) {
+      return [
+          'id'      => $this->db->insert_id(),
+          'success' => true,
+          'message' => 'Data berhasil dihapus'
+      ];
+    }
+  }
+
 }

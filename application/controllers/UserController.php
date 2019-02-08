@@ -34,6 +34,22 @@ class UserController extends CI_Controller {
 		return $this->response($this->user->save());
 	}
 
+	public function delete($id)
+	{
+		// Check user login
+		if ($id_user_token = $this->check_token()) {
+			// Orang yg login yang mau hapus
+			if ($id_user_token == $id) {
+				return $this->response($this->user->delete($id));
+			}else {
+				return $this->response([
+						'success' => false,
+						'message' => 'Gagal Akun User berbeda'
+				]);
+			}
+		}
+	}
+
 	public function get_all()
 	{
 		return $this->response($this->user->get());
@@ -73,11 +89,11 @@ class UserController extends CI_Controller {
 
 		try {
 			$decoded = JWT::decode($jwt, $this->secret, array('HS256'));
-			var_dump($decoded);
+			return $decoded->id;
 		} catch (\SignatureInvalidException $e) {
 			return $this->response([
 					'success' => false,
-					'message' => 'Token Salah'
+					'message' => 'Gagal Token ERROR'
 			]);
 		}
 
