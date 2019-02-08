@@ -1,12 +1,16 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+
 require_once APPPATH .'/libraries/JWT.php';
+require_once APPPATH .'/libraries/SignatureInvalidException.php';
+
 use \Firebase\JWT\JWT;
+use \Firebase\JWT\SignatureInvalidException;
 
 class UserController extends CI_Controller {
 
-	private $secret;
+	private $secret = 'This is scret key ngtd';
 
 	public function __construct()
 	{
@@ -54,12 +58,28 @@ class UserController extends CI_Controller {
 		$user = $this->user->get('email', $this->input->post('email'));
 		// Lanjut jika login berhasil
 		$payload['id'] 		= $user->id;
-		$payload['email'] = $user->email;
 		$payload['iat'] 	= $date->getTimestamp();
 		$payload['exp'] 	= $date->getTimestamp() + 60*60*2;
 
 		$output['id_token'] = JWT::encode($payload, $this->secret);
 
 		$this->response($output);
+	}
+
+	public function check_token()
+	{
+		$jwt = $this->input->get_request_header('Authorization');
+		// die($this->secret);
+
+		try {
+			$decoded = JWT::decode($jwt, $this->secret, array('HS256'));
+			var_dump($decoded);
+		} catch (\SignatureInvalidException $e) {
+			return $this->response([
+					'success' => false,
+					'message' => 'Token Salah'
+			]);
+		}
+
 	}
 }
