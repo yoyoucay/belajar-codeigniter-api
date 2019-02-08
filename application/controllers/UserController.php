@@ -17,11 +17,21 @@ class UserController extends CI_Controller {
 					->set_output(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
 					->_display();
 
-			exit;				
+			exit;
 	}
 
 	public function register()
 	{
 		return $this->response($this->user->save());
+	}
+
+	public function get_all()
+	{
+		return $this->response($this->user->get());
+	}
+
+	public function get($id)
+	{
+		return $this->response($this->user->get('id', $id));
 	}
 }

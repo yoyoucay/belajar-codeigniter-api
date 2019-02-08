@@ -18,5 +18,16 @@ class User extends CI_Model
       }
     }
 
+  public function get($key = null, $value = null)
+  {
+
+    if($key != null){
+      $query = $this->db->get_where('users', array($key => $value));
+      return $query->row();
+    }
+
+    $query = $this->db->get('users');
+    return $query->result();
+  }
 
 }
