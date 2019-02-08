@@ -22,11 +22,11 @@ class UserController extends CI_Controller {
 		header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
 	}
 
-	public function response($data)
+	public function response($data, $status = 200)
 	{
 			$this->output
 					->set_content_type('application/json')
-					->set_status_header(200)
+					->set_status_header($status)
 					->set_output(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
 					->_display();
 
@@ -56,7 +56,7 @@ class UserController extends CI_Controller {
 				return $this->response([
 						'success' => false,
 						'message' => 'Gagal Akun User berbeda'
-				]);
+				], 403);
 			}
 		}
 	}
@@ -101,11 +101,11 @@ class UserController extends CI_Controller {
 		try {
 			$decoded = JWT::decode($jwt, $this->secret, array('HS256'));
 			return $decoded->id;
-		} catch (\SignatureInvalidException $e) {
+		} catch (\Exception $e) {
 			return $this->response([
 					'success' => false,
 					'message' => 'Gagal Token ERROR'
-			]);
+			], 401);
 		}
 
 	}
