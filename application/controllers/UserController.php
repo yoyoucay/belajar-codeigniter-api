@@ -36,11 +36,18 @@ class UserController extends CI_Controller {
 
 	public function delete($id)
 	{
+		if ($this->protected_method($id)) {
+			return $this->response($this->user->delete($id));
+		}
+	}
+
+	public function protected_method($id)
+	{
 		// Check user login
 		if ($id_user_token = $this->check_token()) {
 			// Orang yg login yang mau hapus
 			if ($id_user_token == $id) {
-				return $this->response($this->user->delete($id));
+				return true;
 			}else {
 				return $this->response([
 						'success' => false,
@@ -98,4 +105,19 @@ class UserController extends CI_Controller {
 		}
 
 	}
+
+	public function update($id)
+	{
+		$data = $this->get_input();
+		if ($this->protected_method($id)) {
+			return $this->response($this->user->update($id, $data));
+		}
+	}
+
+	public function get_input()
+	{
+		return json_decode(file_get_contents('php://input'));
+	}
+
+
 }

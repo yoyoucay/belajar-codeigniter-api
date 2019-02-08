@@ -46,13 +46,26 @@ class User extends CI_Model
 
   public function delete($id)
   {
-
     $this->db->where('id', $id);
     if ($this->db->delete('users')) {
       return [
           'id'      => $this->db->insert_id(),
           'success' => true,
           'message' => 'Data berhasil dihapus'
+      ];
+    }
+  }
+
+  public function update($id, $data)
+  {
+    $user_email = ['email' => $data->email];
+
+    $this->db->where('id', $id);
+    if ($this->db->update('users', $data)) {
+      return [
+          'id'      => $this->db->insert_id(),
+          'success' => true,
+          'message' => 'Data berhasil diupdate'
       ];
     }
   }
