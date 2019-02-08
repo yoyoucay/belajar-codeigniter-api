@@ -1,7 +1,12 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require_once APPPATH .'/libraries/JWT.php';
+use \Firebase\JWT\JWT;
+
 class UserController extends CI_Controller {
+
+	private $secret;
 
 	public function __construct()
 	{
@@ -33,5 +38,28 @@ class UserController extends CI_Controller {
 	public function get($id)
 	{
 		return $this->response($this->user->get('id', $id));
+	}
+
+	public function login()
+	{
+		$date = new DateTime();
+
+		if (!$this->user->is_valid()) {
+			return $this->response([
+					'success' => false,
+					'message' => 'Email atau password salah'
+			]);
+		}
+
+		$user = $this->user->get('email', $this->input->post('email'));
+		// Lanjut jika login berhasil
+		$payload['id'] 		= $user->id;
+		$payload['email'] = $user->email;
+		$payload['iat'] 	= $date->getTimestamp();
+		$payload['exp'] 	= $date->getTimestamp() + 60*60*2;
+
+		$output['id_token'] = JWT::encode($payload, $this->secret);
+
+		$this->response($output);
 	}
 }
